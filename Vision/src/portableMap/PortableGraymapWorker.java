@@ -205,23 +205,27 @@ public class PortableGraymapWorker extends PortableMapReader {
 	}
 	
 	public void showHarrisPoints(int keepMax) {
-		Data max = null;
-		PortableMap image = null;
-		try {
-			max = RHarris.keepMax(keepMax);
-			image = new PortableMap(portableMap);
-		float min = max.getMinValue();
-		for(int i = 0; i < portableMap.getHeight(); ++i)
-			for(int j = 0; j < portableMap.getWidth(); ++j)
-				if(max.getMatrixValue(i, j) != min) {
-					for(int a = Math.max(0, i - 5); a < Math.min(portableMap.getHeight(), i + 6); ++a)
-						image.setColorData(a, j, Color.RED);
-					for(int b = Math.max(0, j - 5); b < Math.min(portableMap.getWidth(), j + 6); ++b)
-						image.setColorData(i, b, Color.RED);
-				}
-		new PortableMapReader(image).display();
-		} catch (MyExceptions e) {
-			e.printStackTrace();
-		};
+		if(keepMax < 0)
+			RHarris.display();
+		else {
+			Data max = null;
+			PortableMap image = null;
+			try {
+				max = RHarris.keepMax(keepMax);
+				image = new PortableMap(portableMap);
+			float min = max.getMinValue();
+			for(int i = 0; i < portableMap.getHeight(); ++i)
+				for(int j = 0; j < portableMap.getWidth(); ++j)
+					if(max.getMatrixValue(i, j) != min) {
+						for(int a = Math.max(0, i - 5); a < Math.min(portableMap.getHeight(), i + 6); ++a)
+							image.setColorData(a, j, Color.RED);
+						for(int b = Math.max(0, j - 5); b < Math.min(portableMap.getWidth(), j + 6); ++b)
+							image.setColorData(i, b, Color.RED);
+					}
+			new PortableMapReader(image).display();
+			} catch (MyExceptions e) {
+				e.printStackTrace();
+			};
+		}
 	}
 }

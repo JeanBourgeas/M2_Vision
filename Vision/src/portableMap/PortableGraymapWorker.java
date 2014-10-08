@@ -205,7 +205,6 @@ public class PortableGraymapWorker extends PortableMapReader {
 	}
 	
 	public void showHarrisPoints(int keepMax) {
-		System.out.println(RHarris.getMinValue() + " " + RHarris.getMaxValue());
 		if(keepMax < 0)
 			RHarris.display();
 		else {

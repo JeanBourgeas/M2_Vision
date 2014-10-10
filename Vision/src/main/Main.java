@@ -1,13 +1,15 @@
 package main;
 
 import portableMap.PortableColormapWorker;
+import portableMap.PortableGraymapWorker;
 
 public class Main {
 
 	public static void main(String[] args) {
-		//PortableMapReader pmr = new PortableMapReader("Images TP5\\grenouille.ppm");
-		PortableColormapWorker pgm = new PortableColormapWorker("Images TP1\\house.pgm");
-		pgm.showGrayScaleKmean(6);
-		pgm.showGrayScaleAndPositionKmean(6);
+		/*PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\tiger.pgm");
+		pcw.showHarrisPoints(20);*/
+		PortableColormapWorker pgm = new PortableColormapWorker("Images TP1\\im1.ppm");
+		pgm.display();
+		pgm.showColorKmean(6);
 	}
 }

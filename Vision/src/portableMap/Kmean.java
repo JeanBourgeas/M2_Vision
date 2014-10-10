@@ -29,16 +29,18 @@ public class Kmean {
 	private float[][] newCenters;
 	private int[][] groups;
 	private Color[] color;
+	private boolean calculColor;
 
 	private JFrame window = new JFrame("Data");
 	private boolean windowOpen = false;
 	private JLabel label;
 	private Dimension windowSize = new Dimension();
 	
-	public Kmean(int height, int width, int dimension) throws MyExceptions {
+	public Kmean(int height, int width, int dimension, boolean calculColor) throws MyExceptions {
 		MyNotPositiveNumberException.test("row + 1", height + 1);
 		MyNotPositiveNumberException.test("column + 1", width + 1);
 		MyNotPositiveNumberException.test("dimension + 1", dimension + 1);
+		this.calculColor = calculColor;
 		this.height = height;
 		this.width = width;
 		this.dimension = dimension;
@@ -55,6 +57,7 @@ public class Kmean {
 		for(int i = 0; i < height; ++i)
 			for(int j = 0; j < width; ++j)
 				groups[i][j] = -1;
+		if(!calculColor)
 		color = new Color[]{new Color(51, 153, 255), new Color(51, 153, 102), new Color(51, 0, 102), new Color(204, 102, 0), new Color(204, 255, 102)
 							, new Color(204, 153, 153), new Color(255, 0, 204), new Color(102, 102, 51), new Color(102, 102, 102), new Color(0, 51, 0)
 							, new Color(51, 153, 0), new Color(51, 0, 0), new Color(51, 0, 153), new Color(51, 0, 255), new Color(51, 255, 0)
@@ -221,6 +224,33 @@ public class Kmean {
 	}
 	
 	private BufferedImage getImage() {
+		if(calculColor) {
+			color = new Color[K];
+			int[] numbers = new int[K];
+			float[] R = new float[K];
+			float[] G = new float[K];
+			float[] B = new float[K];
+			for(int i = 0; i < K; ++i) {
+				numbers[i] = 0;
+				R[i] = 0;
+				G[i] = 0;
+				B[i] = 0;
+			}
+			for(int i = 0; i < height; ++i)
+				for(int j = 0; j < width; ++j) {
+					int k = groups[i][j];
+					numbers[k] = numbers[k] + 1;
+					R[k] = R[k] + values[i][j][0];
+					G[k] = G[k] + values[i][j][1];
+					B[k] = B[k] + values[i][j][2];
+				}
+			for(int i = 0; i < K; ++i)
+				if(numbers[i] > 0) {
+					int r = (int) (R[i] / (float) numbers[i]);
+					int g = (int) (G[i] / (float) numbers[i]);
+					color[i] = new Color(r, g, (int) (B[i] / (float) numbers[i]));
+				}
+		}
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		for(int i = 0; i < height; ++i) {
 			for(int j = 0; j < width; ++j) {

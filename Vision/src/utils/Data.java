@@ -17,6 +17,11 @@ import exceptions.MyNotEqualNumberException;
 import exceptions.MyNotOddNumberException;
 import exceptions.MyOutOfBoundException;
 
+/**
+ * This is my own representation of matrix designed to portable map data.
+ * @author Jean
+ *
+ */
 public class Data {
 	private float[][] matrix;
 	private int row;
@@ -31,6 +36,11 @@ public class Data {
 	private JLabel label;
 	private Dimension windowSize = new Dimension();
 	
+	/**
+	 * Initiate an empty Data object.
+	 * @param row (int) The number of row, usually the height of the picture.
+	 * @param column (int) The number of column, usually the width of the picture.
+	 */
 	public Data(int row, int column) {
 		changeMin = true;
 		changeMax = true;
@@ -42,7 +52,13 @@ public class Data {
 				matrix[i][j] = 0;
 		windowInit();
 	}
-	
+
+	/**
+	 * Create a new Data object which is a matrix based on a vector.
+	 * @param vector (float[]) the values to put in the matrix.
+	 * @param row (int) The number of row of the matrix.</br>
+	 * For example, if vector.length == 15 and row == 5, the result is a 3*5 matrix.
+	 */
 	public Data(float[] vector, int row) {
 		changeMin = true;
 		changeMax = true;
@@ -61,6 +77,10 @@ public class Data {
 		windowInit();
 	}
 	
+	/**
+	 * Create a Data object based on a matrix.
+	 * @param matrix (float[][]) The values of the Data object.
+	 */
 	public Data(float[][] matrix) {
 		changeMin = true;
 		changeMax = true;
@@ -73,6 +93,10 @@ public class Data {
 		windowInit();
 	}
 	
+	/**
+	 * Use this constructor to copy a Data object. Every values are a new instance.
+	 * @param data (Data) The Data to copy.
+	 */
 	public Data(Data data) {
 		changeMin = true;
 		changeMax = true;
@@ -85,6 +109,10 @@ public class Data {
 		windowInit();
 	}
 	
+	/**
+	 * Add a float to all the value of the Data.
+	 * @param a (float) The float to add.
+	 */
 	public void add(float a) {
 		for(int i = 0; i < row; ++i)
 			for(int j = 0; j < column; ++j)
@@ -93,6 +121,11 @@ public class Data {
 		lastMax += a;
 	}
 	
+	/**
+	 * Add a Data in this Data. The size must be equal.
+	 * @param data (Data) The Data to add.
+	 * @throws MyExceptions
+	 */
 	public void add(Data data) throws MyExceptions {
 		MyNotEqualNumberException.test("row", row, "data.row", data.row);
 		MyNotEqualNumberException.test("column", column, "data.column", data.column);
@@ -103,6 +136,10 @@ public class Data {
 				matrix[i][j] = matrix[i][j] + data.matrix[i][j];
 	}
 	
+	/**
+	 * Multiply a float to all the value of the Data.
+	 * @param m (float) The float to multiply.
+	 */
 	public void multiply(float m) {
 		changeMax = true;
 		changeMin = true;
@@ -111,6 +148,12 @@ public class Data {
 				matrix[i][j] = matrix[i][j] * m;
 	}
 	
+	/**
+	 * Multiply two matrix. Every value of the result is a linear combination of an horizontal vector and a vertival vector.
+	 * @param data (Data) The second Data of the operation.
+	 * @return (Data) A new matrix witch is the result of the operation this * data.
+	 * @throws MyExceptions
+	 */
 	public Data multiply(Data data) throws MyExceptions {
 		MyNotEqualNumberException.test("column", column, "data.row", data.row);
 		changeMax = true;
@@ -134,6 +177,10 @@ public class Data {
 		return column;
 	}
 	
+	/**
+	 * Use this to know the minimum value of the matrix. This is a heavy research, avoid to call it in a loop if you can.
+	 * @return (float) The minimum value of the matrix.
+	 */
 	public float getMinValue() {
 		if(!changeMin)
 			return lastMin;
@@ -149,6 +196,10 @@ public class Data {
 		return minValue;
 	}
 	
+	/**
+	 * Use this to know the maximum value of the matrix. This is a heavy research, avoid to call it in a loop if you can.
+	 * @return (float) The maximum value of the matrix.
+	 */
 	public float getMaxValue() {
 		if(!changeMax)
 			return lastMax;
@@ -163,6 +214,11 @@ public class Data {
 		return maxValue;
 	}
 	
+	/**
+	 * Use this to get the xth value of the matrix.
+	 * @param x (int) If you want to get the (i, j) value, x == i * column + j;
+	 * @return (float) The xth value of the matrix.
+	 */
 	public float getVectorValue(int x) {
 		float[] vector = new float[matrix.length * matrix[0].length];
 		for(int i = 0; i < matrix.length; ++i)
@@ -175,6 +231,11 @@ public class Data {
 		return matrix[row][column];
 	}
 	
+	/**
+	 * Use this to set the xth value of the matrix.
+	 * @param x (int) If you want to set the (i, j) value, x == i * column + j;
+	 * @param value (float) The value to set in the matrix.
+	 */
 	public void setVectorValue(int x, float value) throws MyExceptions {
 		MyOutOfBoundException.test("x", x, 0, row*column-1);
 		changeMin = true;
@@ -190,6 +251,11 @@ public class Data {
 		matrix[row][column] = value;
 	}
 	
+	/**
+	 * This method apply a filter on the Data.
+	 * @param filter (Data) The filter used for the Gauss algorithm. 
+	 * @throws MyExceptions
+	 */
 	public void applyFilter(Data filter) throws MyExceptions {
 		MyOutOfBoundException.test("filter.row", filter.row, 1, row-1);
 		MyOutOfBoundException.test("filter.column", filter.column, 1, column-1);
@@ -214,6 +280,11 @@ public class Data {
 		changeMax = true;
 	}
 	
+	/**
+	 * This method apply a filter on the portableMap. </br>
+	 * @param size (int) The size of the width (= height) of the median filter.
+	 * @throws MyExceptions
+	 */
 	public void applyMedianFilter(int size) throws MyExceptions {
 		MyNotOddNumberException.test("size", size);
 		MyOutOfBoundException.test("size", size, 3, Math.min(row, column)-1);
@@ -245,6 +316,11 @@ public class Data {
 		changeMax = true;
 	}
 	
+	/**
+	 * This method paint the matrix on a BufferedImage.</br>
+	 * Values are crop between 0 and 255.
+	 * @return (BufferedImage) The image.
+	 */
 	private BufferedImage getImage() {
 		BufferedImage image = new BufferedImage(column, row, BufferedImage.TYPE_INT_RGB);
 		float minValue = getMinValue();
@@ -258,6 +334,10 @@ public class Data {
 		return image;
 	}
 	
+	/**
+	 * Use this to display the matrix on the screen.</br>
+	 * Values are crop between 0 and 255.
+	 */
 	public void display() {
 		if(label != null)
 			window.remove(label);
@@ -269,12 +349,15 @@ public class Data {
 		windowOpen = true;
 	}
 	
-	public void masquer() {
+	/**
+	 * Use this to close the window open by this.display();
+	 */
+	public void hide() {
 		window.setVisible(false);
 		windowOpen = false;
 	}
 	
-	protected void windowInit() {
+	private void windowInit() {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		window.setFocusable(true);
@@ -311,6 +394,12 @@ public class Data {
 		});
 	}
 	
+	/**
+	 * This method is used to keep only a certain number of the higher values in this Data.
+	 * @param number (int) The number of values to keep.
+	 * @return (Data) A new Data with the maximums values to keep and this.minValue() everywhere else.
+	 * @throws MyExceptions
+	 */
 	public Data keepMax(int number) throws MyExceptions {
 		MyOutOfBoundException.test("number", number, 0, row* column);
 		Data result = new Data(row, column);

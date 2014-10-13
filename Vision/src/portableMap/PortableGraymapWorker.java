@@ -10,14 +10,24 @@ import utils.Data;
 import exceptions.MyExceptions;
 import exceptions.MyOutOfBoundException;
 
+/**
+ * This class extends PortableMapReader. </br>
+ * It can open the 6 types of portable map but provide methods to modify gray scale pictures.
+ * @author Jean
+ *
+ */
 public class PortableGraymapWorker extends PortableMapReader {
-	protected int[] histogram;
-	protected Data verticalGradient;
-	protected Data horizontalGradient;
-	protected Data moduleGradient;
-	protected Data RHarris;
-	protected float alpha = 0.04f;
+	private int[] histogram;
+	private Data verticalGradient;
+	private Data horizontalGradient;
+	private Data moduleGradient;
+	private Data RHarris;
+	private float alpha = 0.04f;
 
+	/**
+	 * The constructor for the PortableGraymapWorker.
+	 * @param path (String) The path to the portable map file to read.
+	 */
 	public PortableGraymapWorker(String path) {
 		super(path);
 		try {
@@ -27,10 +37,18 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
+	/**
+	 * This allowed to get the alpha of the Harris points algorithm.
+	 * @return (float) The value of alpha.
+	 */
 	public float getAlpha() {
 		return alpha;
 	}
 	
+	/**
+	 * This allowed to change the alpha of the Harris points algorithm.
+	 * @param alpha (float) The new value of alpha.
+	 */
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
 	}
@@ -94,10 +112,12 @@ public class PortableGraymapWorker extends PortableMapReader {
 				if(copie.getMatrixValue(i, j) < 0)
 					keep = false;
 				int a = -1;
-				int b = -1;
 				while(a < 2 && keep) {
+					int b = -1;
 					while(b < 2 && keep) {
 						if(copie.getMatrixValue(i + a, j + b) > copie.getMatrixValue(i, j))
+							keep = false;
+						if(copie.getMatrixValue(i + a, j + b) == copie.getMatrixValue(i, j) && (a == 1 || (a == 0 && b == 1)))
 							keep = false;
 						++b;
 					}
@@ -108,12 +128,17 @@ public class PortableGraymapWorker extends PortableMapReader {
 			}
 	}
 	
-	protected void calculs() throws MyExceptions {
+	private void calculs() throws MyExceptions {
 		calculHistogram();
 		calculGradient();
 		calculRHarris();
 	}
 	
+	/**
+	 * This method apply a filter on the portableMap. </br>
+	 * Caution, this filter use only gray scale values, the result will be a gray scale image.
+	 * @param filter (Data) The filter used for the Gauss algorithm.
+	 */
 	public void applyFilter(Data filter) {
 		try {
 			portableMap.applyFilter(filter);
@@ -122,6 +147,11 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
+	/**
+	 * This method apply a filter on the portableMap. </br>
+	 * Caution, this filter use only gray scale values, the result will be a gray scale image.
+	 * @param size (int) The size of the width (= height) of the median filter.
+	 */
 	public void applyMedianFilter(int size) {
 		try {
 			portableMap.applyMedianFilter(size);
@@ -130,8 +160,14 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
-	public void saveHistogram() {
+	/**
+	 * Save the histogram in a comma separated file.
+	 * @param path (String) The path of the result file. If path is null, it will be "histogram.csv";
+	 */
+	public void saveHistogram(String path) {
 		try {
+			if(path == null)
+				path = "histogram.csv";
 			File file = new File("histogram.csv");
 			file.createNewFile();
 			FileWriter fileW = new FileWriter(file);
@@ -150,10 +186,15 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
+	/**
+	 * Use this method to crop the histogram between two values.
+	 * @param minHisto (int) The minimum value of the histogram. (between 0 and maxIntensity)
+	 * @param maxHisto (int) The maximum value of the histogram. (between minHisto and maxIntensity)
+	 */
 	public void cropHistogram(int minHisto, int maxHisto) {
 		try {
 			MyOutOfBoundException.test("minHisto", minHisto, 0, portableMap.getMaxIntensity());
-			MyOutOfBoundException.test("maxHisto", maxHisto, 0, portableMap.getMaxIntensity());
+			MyOutOfBoundException.test("maxHisto", maxHisto, minHisto, portableMap.getMaxIntensity());
 			int currentMin = -1;
 			int currentMax = histogram.length;
 			int loop = 0;
@@ -181,6 +222,10 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
+	/**
+	 * Use this method to reverse the histogram. </br>
+	 * Basically, this method will turn brighter pixels into darker pixels and the opposite.
+	 */
 	public void reverseHistogram() {
 		try {
 			for(int i = 0; i < portableMap.getHeight(); ++i)
@@ -192,18 +237,43 @@ public class PortableGraymapWorker extends PortableMapReader {
 		}
 	}
 	
-	public void showVerticalGradient() {
-		verticalGradient.display();
+	/**
+	 * This method allow you to display the vertical gradient map on the screen.
+	 * @param show (boolean) True if you want to show it. False if you want to hide it.
+	 */
+	public void showVerticalGradient(boolean show) {
+		if(show)
+			verticalGradient.display();
+		else
+			verticalGradient.hide();
 	}
 	
-	public void showHorizontalGradient() {
-		horizontalGradient.display();
+	/**
+	 * This method allow you to display the horizontal gradient map on the screen.
+	 * @param show (boolean) True if you want to show it. False if you want to hide it.
+	 */
+	public void showHorizontalGradient(boolean show) {
+		if(show)
+			horizontalGradient.display();
+		else
+			horizontalGradient.hide();
 	}
 	
-	public void showModuleGradient(int threshold) {
-		moduleGradient.display();
+	/**
+	 * This method allow you to display the module gradient map on the screen.
+	 * @param show (boolean) True if you want to show it. False if you want to hide it.
+	 */
+	public void showModuleGradient(boolean show) {
+		if(show)
+			moduleGradient.display();
+		else
+			moduleGradient.hide();
 	}
 	
+	/**
+	 * This method display the original pictures and show the Harris points on it, with a red cross.
+	 * @param keepMax (int) The number of points you want to display.
+	 */
 	public void showHarrisPoints(int keepMax) {
 		if(keepMax < 0)
 			RHarris.display();
@@ -227,5 +297,12 @@ public class PortableGraymapWorker extends PortableMapReader {
 				e.printStackTrace();
 			};
 		}
+	}
+	
+	/**
+	 * This method hide the window opened by showHarrisPoints() method
+	 */
+	public void hideHarrisPoints() {
+		RHarris.hide();
 	}
 }

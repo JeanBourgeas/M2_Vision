@@ -6,10 +6,12 @@ import portableMap.PortableGraymapWorker;
 public class Main {
 
 	public static void main(String[] args) {
-		/*PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\tiger.pgm");
-		pcw.showHarrisPoints(20);*/
-		PortableColormapWorker pgm = new PortableColormapWorker("Images TP1\\im1.ppm");
+		PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\house.pgm");
+		pcw.display();
+		pcw.showHarrisPoints(100);
+		/*PortableColormapWorker pgm = new PortableColormapWorker("Images TP5\\grenouille.ppm");
 		pgm.display();
-		pgm.showColorKmean(6);
+		pgm.showColorKmean(3, true);
+		pgm.showColorAndPositionKmean(6, true);*/
 	}
 }

@@ -23,16 +23,27 @@ import exceptions.MyExceptions;
 import exceptions.MyOutOfBoundException;
 import utils.Tuple;
 
+/**
+ * This class can read a portable map in the 6 formats and store it in a PortableMap object.</br>
+ * It can save it in any format and display it on the screen.
+ * @author Jean
+ * @see PortableGraymapWorker.java
+ * @see PortableColormapWorker.java
+ */
 public class PortableMapReader {
 	protected PortableMap portableMap;
-	protected int currentBit = 7;
-	protected int[] bit = new int[8];
+	private int currentBit = 7;
+	private int[] bit = new int[8];
 
-	protected JFrame window = new JFrame("PortableMap");
-	protected boolean windowOpen = false;
-	protected JLabel label;
-	protected Dimension windowSize = new Dimension();
+	private JFrame window = new JFrame("PortableMap");
+	private boolean windowOpen = false;
+	private JLabel label;
+	private Dimension windowSize = new Dimension();
 	
+	/**
+	 * The constructor for the PortableMapReader.
+	 * @param path (String) The path to the portable map file to read.
+	 */
 	public PortableMapReader(String path) {
 		windowInit();
 		try {
@@ -73,6 +84,11 @@ public class PortableMapReader {
 		}
 	}
 	
+	/**
+	 * Use this constructor to create a PortableMapReader with an existing PortableMap object.</br>
+	 * All the values are copies and can be changed without damaging the first PortableMap.
+	 * @param portableMap (PortableMap) The PortableMap to copy.
+	 */
 	public PortableMapReader(PortableMap portableMap) {
 		windowInit();
 		try {
@@ -82,7 +98,7 @@ public class PortableMapReader {
 		}
 	}
 	
-	protected void readP123(int type, BufferedReader buff, int width, int height) throws IOException, MyExceptions {
+	private void readP123(int type, BufferedReader buff, int width, int height) throws IOException, MyExceptions {
 		String[] splitLine;
 		int currentRow = 0;
 		int currentColumn = 0;
@@ -130,7 +146,7 @@ public class PortableMapReader {
 		}
 	}
 	
-	protected void readP4(FileInputStream reader, int width, int height) throws IOException, MyExceptions {
+	private void readP4(FileInputStream reader, int width, int height) throws IOException, MyExceptions {
 		int currentRow = 0;
 		int currentColumn = 0;
 		int bit = readBit(reader);
@@ -148,7 +164,7 @@ public class PortableMapReader {
 		}
 	}
 	
-	protected void readP56(int type, FileInputStream reader, int width, int height) throws IOException, MyExceptions {
+	private void readP56(int type, FileInputStream reader, int width, int height) throws IOException, MyExceptions {
 		int currentRow = 0;
 		int currentColumn = 0;
 		int currentColor = 0;
@@ -187,6 +203,9 @@ public class PortableMapReader {
 		}
 	}
 	
+	/**
+	 * Use this to display the portable map on the screen.
+	 */
 	public void display() {
 		if(label != null)
 			window.remove(label);
@@ -198,11 +217,19 @@ public class PortableMapReader {
 		windowOpen = true;
 	}
 	
-	public void masquer() {
+	/**
+	 * Use this to close the window open by this.display();
+	 */
+	public void hide() {
 		window.setVisible(false);
 		windowOpen = false;
 	}
 	
+	/**
+	 * Save the PortableMap on the computer.
+	 * @param name (String) The path of the new file.
+	 * @param type (int) The type of the new portable map. (between 1 and 6)
+	 */
 	public void save(String name, int type) {
 		try {
 			MyOutOfBoundException.test("type", type, 1, 6);
@@ -283,7 +310,7 @@ public class PortableMapReader {
 		}
 	}
 	
-	protected void windowInit() {
+	private void windowInit() {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		window.setFocusable(true);
@@ -320,7 +347,7 @@ public class PortableMapReader {
 		});
 	}
 	
-	protected Tuple<String, Integer> readLine(BufferedReader buff) throws IOException {
+	private Tuple<String, Integer> readLine(BufferedReader buff) throws IOException {
 		int readLenght = 0;
 		String line = buff.readLine();
 		while(line != null && line.charAt(0) == '#') {
@@ -332,7 +359,7 @@ public class PortableMapReader {
 		return new Tuple<String, Integer>(line, readLenght);
 	}
 	
-	protected int readBit(FileInputStream reader) throws IOException {
+	private int readBit(FileInputStream reader) throws IOException {
 		if(currentBit == 7) {
 			int octet = reader.read();
 			if(octet == -1)
@@ -346,11 +373,11 @@ public class PortableMapReader {
 		return bit[currentBit];
 	}
 	
-	protected int readByte(FileInputStream reader) throws IOException {
+	private int readByte(FileInputStream reader) throws IOException {
 		return reader.read();
 	}
 	
-	protected void writeNumber(FileOutputStream output, int number) throws IOException {
+	private void writeNumber(FileOutputStream output, int number) throws IOException {
 		if(number < 0)
 			number = -number;
 		int pow = 1;

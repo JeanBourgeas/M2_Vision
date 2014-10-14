@@ -39,6 +39,7 @@ public class PortableMapReader {
 	private boolean windowOpen = false;
 	private JLabel label;
 	private Dimension windowSize = new Dimension();
+	private BufferedImage currentImage;
 	
 	/**
 	 * The constructor for the PortableMapReader.
@@ -209,7 +210,23 @@ public class PortableMapReader {
 	public void display() {
 		if(label != null)
 			window.remove(label);
-		label = new JLabel(new ImageIcon(portableMap.getImage()));
+		currentImage = portableMap.getImage();
+		label = new JLabel(new ImageIcon(currentImage));
+		window.add(label);
+		window.pack();
+		window.setVisible(true);
+		windowSize = window.getSize();
+		windowOpen = true;
+	}
+	
+	/**
+	 * Use this to display a BufferedImage on the screen.
+	 */
+	public void display(BufferedImage image) {
+		if(label != null)
+			window.remove(label);
+		currentImage = image;
+		label = new JLabel(new ImageIcon(image));
 		window.add(label);
 		window.pack();
 		window.setVisible(true);
@@ -320,8 +337,8 @@ public class PortableMapReader {
 			public void componentHidden(ComponentEvent arg0) {}
 			public void componentResized(ComponentEvent arg0) {
 				if(windowOpen) {
-					BufferedImage im = new BufferedImage(Math.max(1, portableMap.getWidth() + window.getSize().width - windowSize.width), Math.max(1, portableMap.getHeight() + window.getSize().height - windowSize.height), BufferedImage.TYPE_INT_RGB);
-					im.getGraphics().drawImage(portableMap.getImage(), 0, 0, im.getWidth(), im.getHeight(), null);
+					BufferedImage im = new BufferedImage(Math.max(1, currentImage.getWidth() + window.getSize().width - windowSize.width), Math.max(1, currentImage.getHeight() + window.getSize().height - windowSize.height), BufferedImage.TYPE_INT_RGB);
+					im.getGraphics().drawImage(currentImage, 0, 0, im.getWidth(), im.getHeight(), null);
 					window.remove(label);
 					label = new JLabel(new ImageIcon(im));
 					window.add(label);

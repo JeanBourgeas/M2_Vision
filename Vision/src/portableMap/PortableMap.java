@@ -22,6 +22,7 @@ class PortableMap {
 	private Data data;
 	private int[][] binaryData;
 	private int grayscaleMethod;
+	private int binaryThreshold;
 	
 	public static final int grayscaleLightness = 0;
 	public static final int grayscaleAverage = 1;
@@ -51,6 +52,7 @@ class PortableMap {
 				colorData[i][j] = new Color(0,0,0);
 		data = new Data(height, width);
 		binaryData = new int[height][width];
+		binaryThreshold = maxIntensity / 2;
 	}
 	
 	/**
@@ -63,6 +65,7 @@ class PortableMap {
 		height = portableMap.getHeight();
 		maxIntensity = portableMap.getMaxIntensity();
 		grayscaleMethod = portableMap.getGrayscaleMethod();
+		binaryThreshold = portableMap.binaryThreshold;
 		colorData = new Color[height][width];
 		data = new Data(height, width);
 		binaryData = new int[height][width];
@@ -72,6 +75,18 @@ class PortableMap {
 				data.setMatrixValue(i, j, portableMap.getData(i, j));
 				binaryData[i][j] = portableMap.getBinaryData(i, j);
 			}
+	}
+	
+	public void setBinaryThreshold(int threshold) throws MyExceptions {
+		MyOutOfBoundException.test("threshold", threshold, 0, maxIntensity);
+		binaryThreshold = threshold;
+		for(int i = 0; i < height; ++i)
+			for(int j = 0; j < width; ++j)
+				binaryData[i][j] = dataToBinary((int) data.getMatrixValue(i, j));
+	}
+	
+	public int getBinaryThreshold() {
+		return binaryThreshold;
 	}
 	
 	public Color[][] getColorData() {
@@ -236,6 +251,23 @@ class PortableMap {
 	}
 	
 	/**
+	 * This method paint the portableMap on a BufferedImage in black or white.
+	 * @return (BufferedImage) The image.
+	 */
+	public BufferedImage getBinaryImage() {
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		int[] col = new int[2];
+		col[0] = Color.WHITE.getRGB();
+		col[1] = Color.BLACK.getRGB();
+		for(int i = 0; i < height; ++i) {
+			for(int j = 0; j < width; ++j) {
+				image.setRGB(j, i, col[binaryData[i][j]]);
+			}
+		}
+		return image;
+	}
+	
+	/**
 	 * This method apply a filter on the portableMap. </br>
 	 * Caution, this filter use only gray scale values, the result will be a gray scale image.
 	 * @param filter (Data) The filter used for the Gauss algorithm. 
@@ -270,9 +302,9 @@ class PortableMap {
 	}
 	
 	private int dataToBinary(int value) {
-		if(value > maxIntensity / 2)
-			return 1;
-		return 0;
+		if(value > binaryThreshold)
+			return 0;
+		return 1;
 	}
 	
 	private Color dataToColor(int value) {

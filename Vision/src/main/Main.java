@@ -1,14 +1,19 @@
 package main;
 
 import portableMap.PortableColormapWorker;
+import portableMap.PortableGraymapWorkerPart2;
 import portableMap.PortableGraymapWorker;
 
 public class Main {
 
 	public static void main(String[] args) {
-		PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\house.pgm");
+		PortableGraymapWorkerPart2 p2 = new PortableGraymapWorkerPart2("Images\\objets.pgm");
+		p2.showThresholdBinaryPicture(10);
+		p2 = new PortableGraymapWorkerPart2("Images\\objets.pgm");
+		p2.display();
+		/*PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\house.pgm");
 		pcw.display();
-		pcw.showHarrisPoints(100);
+		pcw.showHarrisPoints(100);*/
 		/*PortableColormapWorker pgm = new PortableColormapWorker("Images TP5\\grenouille.ppm");
 		pgm.display();
 		pgm.showColorKmean(3, true);

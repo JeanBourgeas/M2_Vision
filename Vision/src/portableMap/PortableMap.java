@@ -82,7 +82,7 @@ class PortableMap {
 		binaryThreshold = threshold;
 		for(int i = 0; i < height; ++i)
 			for(int j = 0; j < width; ++j)
-				binaryData[i][j] = dataToBinary((int) data.getMatrixValue(i, j));
+				setBinaryData(i, j, dataToBinary((int) data.getMatrixValue(i, j)));
 	}
 	
 	public int getBinaryThreshold() {
@@ -298,7 +298,7 @@ class PortableMap {
 	}
 	
 	private int binaryToData(int value) {
-		return value*255;
+		return (1 - value)*255;
 	}
 	
 	private int dataToBinary(int value) {

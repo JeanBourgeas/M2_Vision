@@ -36,6 +36,19 @@ public class PortableGraymapWorker extends PortableMapReader {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * The constructor for the PortableGraymapWorker.
+	 * @param portableMap (PortableMap) The PortableMap to copy.
+	 */
+	public PortableGraymapWorker(PortableMap portableMap) {
+		super(portableMap);
+		try {
+			calculs();
+		} catch (MyExceptions e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * This allowed to get the alpha of the Harris points algorithm.

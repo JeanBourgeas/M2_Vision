@@ -358,7 +358,7 @@ public class Data {
 	}
 	
 	private void windowInit() {
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setResizable(true);
 		window.setFocusable(true);
 		window.addComponentListener(new ComponentListener() {

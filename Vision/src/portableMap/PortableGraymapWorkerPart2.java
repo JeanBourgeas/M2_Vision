@@ -21,6 +21,11 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 		objectConnexity = connexity4;
 	}
 
+	public PortableGraymapWorkerPart2(PortableMap portableMap) {
+		super(portableMap);
+		objectConnexity = connexity4;
+	}
+
 	public PortableGraymapWorkerPart2(String path, int connexity) {
 		super(path);
 		try {
@@ -30,10 +35,21 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 		}
 		objectConnexity = connexity;
 	}
-	
-	public void showConnexDatas() {
+
+	public PortableGraymapWorkerPart2(PortableMap portableMap, int connexity) {
+		super(portableMap);
 		try {
-			Data connexDatas = new Data(portableMap.getHeight(), portableMap.getWidth());
+			MyOutOfBoundException.test("connexity", connexity, 0, 1);
+		} catch (MyOutOfBoundException e) {
+			e.printStackTrace();
+		}
+		objectConnexity = connexity;
+	}
+	
+	private Data getConnexDatas() {
+		Data connexDatas = null;
+		try {
+			connexDatas = new Data(portableMap.getHeight(), portableMap.getWidth());
 			Label label = new Label();
 			for(int i = 1; i < portableMap.getHeight() - 1; ++i)
 				for(int j = 1; j < portableMap.getWidth() - 1; ++j)
@@ -104,15 +120,86 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 				for(int j = 1; j < portableMap.getWidth() - 1; ++j) {
 					connexDatas.setMatrixValue(i, j, label.find((int) connexDatas.getMatrixValue(i, j)));
 				}
-			BufferedImage image = new BufferedImage(portableMap.getWidth(), portableMap.getHeight(), BufferedImage.TYPE_INT_RGB);
-			for(int i = 1; i < portableMap.getHeight() - 1; ++i)
-				for(int j = 1; j < portableMap.getWidth() - 1; ++j) {
-					if(connexDatas.getMatrixValue(i, j) == 0)
-						image.setRGB(j, i, Color.WHITE.getRGB());
-					else
-						image.setRGB(j, i, new Random(new Random((int) connexDatas.getMatrixValue(i, j)).nextInt(10000)).nextInt(16777216));
-				}
-			display(image);
+		} catch (MyExceptions e) {
+			e.printStackTrace();
+		}
+		return connexDatas;
+	}
+
+	public void showConnexDatas() {
+		Data connexDatas = getConnexDatas();
+		BufferedImage image = new BufferedImage(portableMap.getWidth(), portableMap.getHeight(), BufferedImage.TYPE_INT_RGB);
+		for(int i = 1; i < portableMap.getHeight() - 1; ++i)
+			for(int j = 1; j < portableMap.getWidth() - 1; ++j) {
+				if(connexDatas.getMatrixValue(i, j) == 0)
+					image.setRGB(j, i, Color.WHITE.getRGB());
+				else
+					image.setRGB(j, i, new Random(new Random((int) connexDatas.getMatrixValue(i, j)).nextInt(10000)).nextInt(16777216));
+			}
+		display(image);
+	}
+	
+	private void mergeDatas(Data data) throws MyExceptions {
+		List<Float> list = new ArrayList<Float>();
+		list.add(0.0f);
+		for(int i = 0; i < data.getRow(); ++i)
+			for(int j = 0; j < data.getColumn(); ++j) {
+				if(!list.contains(data.getMatrixValue(i, j)))
+					list.add(data.getMatrixValue(i, j));
+			}
+		for(int i = 0; i < data.getRow(); ++i)
+			for(int j = 0; j < data.getColumn(); ++j) {
+				int num = 0;
+				while(data.getMatrixValue(i, j) != list.get(num))
+					++num;
+				data.setMatrixValue(i, j, num);
+			}
+	}
+	
+	public void printHoleNumber() {
+		System.out.println("Here is the number of holes in each object of the picture : ");
+		try {
+			Data connexDatas = getConnexDatas();
+			mergeDatas(connexDatas);
+			for(int object = 1; object < connexDatas.getMaxValue() + 1; ++object) {
+				int xMin = connexDatas.getColumn();
+				int xMax = -1;
+				int yMin = connexDatas.getRow();
+				int yMax = -1;
+				for(int i = 0; i < connexDatas.getRow(); ++i)
+					for(int j = 0; j < connexDatas.getColumn(); ++j)
+						if(connexDatas.getMatrixValue(i, j) == object) {
+							if(xMin > j)
+								xMin = j;
+							if(xMax < j)
+								xMax = j;
+							if(yMin > i)
+								yMin = i;
+							if(yMax < i)
+								yMax = i;
+						}
+				PortableMap subPortableMap = new PortableMap(xMax - xMin + 5, yMax - yMin + 5, 255, PortableMap.grayscaleAverage);
+				for(int i = 0; i < subPortableMap.getHeight(); ++i)
+					for(int j = 0; j < subPortableMap.getWidth(); ++j) {
+						if(i < 2 || j < 2 || i > subPortableMap.getHeight() - 3 || j > subPortableMap.getWidth() - 3)
+							subPortableMap.setBinaryData(i, j, 0);
+						else {
+							if(connexDatas.getMatrixValue(yMin - 2 + i, xMin - 2 + j) == object)
+								subPortableMap.setBinaryData(i, j, 1);
+							else
+								subPortableMap.setBinaryData(i, j, 0);
+						}
+					}
+				PortableGraymapWorkerPart2 subPGWP2 = new PortableGraymapWorkerPart2(subPortableMap, 1 - objectConnexity);
+				subPGWP2.display();
+				subPGWP2.negativeBinaryPicture();
+				Data subData = subPGWP2.getConnexDatas();
+				mergeDatas(subData);
+				String res = "   Object number " + object + " : " + (int) (subData.getMaxValue() - 1) + " hole";
+				if(subData.getMaxValue() - 1 > 1)
+					res = res + "s";
+				System.out.println(res);
+			}
 		} catch (MyExceptions e) {
 			e.printStackTrace();
 		}

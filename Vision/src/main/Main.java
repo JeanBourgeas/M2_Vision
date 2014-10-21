@@ -11,10 +11,7 @@ public class Main {
 		p2.display();
 		p2.setThresholdBinaryPicture(10);
 		p2.negativeBinaryPicture();
-		p2 = new PortableGraymapWorkerPart2("Images\\objets.pgm");
-		p2.setThresholdBinaryPicture(10);
-		p2.negativeBinaryPicture();
-		p2.showConnexDatas();
+		p2.printHoleNumber();
 		/*PortableGraymapWorker pcw = new PortableGraymapWorker("Images TP1\\house.pgm");
 		pcw.display();
 		pcw.showHarrisPoints(100);*/

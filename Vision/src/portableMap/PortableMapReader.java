@@ -355,7 +355,7 @@ public class PortableMapReader {
 			public void mouseClicked(MouseEvent arg0) {
 				if(windowOpen && arg0.getButton() == 2) {
 					window.remove(label);
-					label = new JLabel(new ImageIcon(portableMap.getImage()));
+					label = new JLabel(new ImageIcon(currentImage));
 					window.add(label);
 					window.pack();
 					window.setVisible(true);

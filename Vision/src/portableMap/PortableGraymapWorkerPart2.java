@@ -18,7 +18,17 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 
 	public PortableGraymapWorkerPart2(String path) {
 		super(path);
-		objectConnexity = 0;
+		objectConnexity = connexity4;
+	}
+
+	public PortableGraymapWorkerPart2(String path, int connexity) {
+		super(path);
+		try {
+			MyOutOfBoundException.test("connexity", connexity, 0, 1);
+		} catch (MyOutOfBoundException e) {
+			e.printStackTrace();
+		}
+		objectConnexity = connexity;
 	}
 	
 	public void showConnexDatas() {
@@ -106,6 +116,10 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 		} catch (MyExceptions e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public int getObjectConnexity() {
+		return objectConnexity;
 	}
 	
 	public void setObjectConnexity(int connexity) {

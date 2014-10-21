@@ -7,7 +7,7 @@ import portableMap.PortableGraymapWorker;
 public class Main {
 
 	public static void main(String[] args) {
-		PortableGraymapWorkerPart2 p2 = new PortableGraymapWorkerPart2("Images\\objets.pgm");
+		PortableGraymapWorkerPart2 p2 = new PortableGraymapWorkerPart2("Images\\objets.pgm", 1);
 		p2.display();
 		p2.setThresholdBinaryPicture(10);
 		p2.negativeBinaryPicture();

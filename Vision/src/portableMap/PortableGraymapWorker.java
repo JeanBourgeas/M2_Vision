@@ -64,6 +64,11 @@ public class PortableGraymapWorker extends PortableMapReader {
 	 */
 	public void setAlpha(float alpha) {
 		this.alpha = alpha;
+		try {
+			calculs();
+		} catch (MyExceptions e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private void calculHistogram() throws MyExceptions {
@@ -79,6 +84,9 @@ public class PortableGraymapWorker extends PortableMapReader {
 		verticalGradient = new Data(portableMap.getHeight(), portableMap.getWidth());
 		horizontalGradient = new Data(portableMap.getHeight(), portableMap.getWidth());
 		moduleGradient = new Data(portableMap.getHeight(), portableMap.getWidth());
+		verticalGradient.setName("Vertical Gradient");
+		horizontalGradient.setName("Horizontal Gradient");
+		moduleGradient.setName("Module Gradient");
 		for(int i = 1; i < portableMap.getHeight() - 1; ++i)
 			for(int j = 1; j < portableMap.getWidth() - 1; ++j) {
 				verticalGradient.setMatrixValue(i, j, (- portableMap.getData(i-1, j-1) - 2 * portableMap.getData(i-1, j) - portableMap.getData(i-1, j+1)
@@ -94,6 +102,7 @@ public class PortableGraymapWorker extends PortableMapReader {
 		Data B = new Data(portableMap.getHeight(), portableMap.getWidth());
 		Data C = new Data(portableMap.getHeight(), portableMap.getWidth());
 		RHarris = new Data(portableMap.getHeight(), portableMap.getWidth());
+		RHarris.setName("RHarris");
 		for(int i = 0; i < portableMap.getHeight(); ++i)
 			for(int j = 0; j < portableMap.getWidth(); ++j) {
 				if(i == 0 || i == portableMap.getHeight() - 1 || j == 0 || j == portableMap.getWidth() - 1) {

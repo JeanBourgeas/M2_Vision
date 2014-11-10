@@ -109,6 +109,10 @@ public class Data {
 		windowInit();
 	}
 	
+	public void setName(String name) {
+		window.setTitle(name);
+	}
+	
 	/**
 	 * Add a float to all the value of the Data.
 	 * @param a (float) The float to add.
@@ -261,11 +265,7 @@ public class Data {
 		MyOutOfBoundException.test("filter.column", filter.column, 1, column-1);
 		int width = (filter.row - 1) / 2;
 		int height = (filter.column - 1) / 2;
-		float[][] clone = new float[matrix.length][matrix[0].length];
-		for(int i = 0; i < matrix.length; ++i) {
-			clone[i][0] = matrix[i][0];
-			clone[i][matrix[0].length-1] = matrix[i][matrix[0].length-1];
-		}
+		Data clone = new Data(this);
 		for(int i = height; i < row - height; ++i)
 			for(int j = width; j < column - width; ++j) {
 				int sum = 0;
@@ -273,9 +273,9 @@ public class Data {
 					for(int b = -width; b < width + 1; ++b) {
 						sum += matrix[i + a][j + b] * filter.matrix[a + height][b + width];
 					}
-				clone[i][j] = sum;
+				clone.setMatrixValue(i, j, sum);
 			}
-		matrix = clone;
+		matrix = clone.matrix;
 		changeMin = true;
 		changeMax = true;
 	}
@@ -289,11 +289,7 @@ public class Data {
 		MyNotOddNumberException.test("size", size);
 		MyOutOfBoundException.test("size", size, 3, Math.min(row, column)-1);
 		int width = (size - 1) / 2;
-		float[][] clone = new float[matrix.length][matrix[0].length];
-		for(int i = 0; i < matrix.length; ++i) {
-			clone[i][0] = matrix[i][0];
-			clone[i][matrix[0].length-1] = matrix[i][matrix[0].length-1];
-		}
+		Data clone = new Data(this);
 		for(int i = width; i < row - width; ++i)
 			for(int j = width; j < column - width; ++j) {
 				float[] values = new float[size*size];
@@ -309,11 +305,95 @@ public class Data {
 							values[b] = x;
 						}
 					}
-				clone[i][j] = values[(size*size - 1) / 2];
+				clone.setMatrixValue(i, j, values[(size*size - 1) / 2]);
 			}
-		matrix = clone;
+		matrix = clone.matrix;
 		changeMin = true;
 		changeMax = true;
+	}
+	
+	/**
+	 * Use this method for apply a erosion filter on the picture.
+	 * @param size (int) The size of the square filter.
+	 * @return (Data) The new picture.
+	 * @throws MyExceptions
+	 */
+	public Data squareErosion(int size) throws MyExceptions {
+		Data filter = new Data(size, size);
+		for(int i = 0; i < filter.row; ++i)
+			for(int j = 0; j < filter.column; ++j)
+				filter.setMatrixValue(i, j, 1.0f);
+		return erosion(filter);
+	}
+	
+	/**
+	 * Use this method for apply a erosion filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 * @return (Data) The new picture.
+	 * @throws MyExceptions
+	 */
+	public Data erosion(Data filter) throws MyExceptions {
+		Data result = new Data(this);
+		int[] filterCenter = new int[2];
+		filterCenter[0] = filter.row/2;
+		filterCenter[1] = filter.column/2;
+		for(int i = 0; i < row; ++i)
+			for(int j = 0; j < column; ++j) {
+				float min = Float.MAX_VALUE;
+				for(int k = 0; k < filter.row; ++k)
+					for(int l = 0; l < filter.column; ++l) {
+						int x = j - filterCenter[1] + l;
+						int y = i - filterCenter[0] + k;
+						if(filter.getMatrixValue(k, l) != 0 && x > -1 && y > -1 && x < column && y < row) {
+							if(getMatrixValue(y, x) < min)
+								min = getMatrixValue(y, x);
+						}
+					}
+				result.setMatrixValue(i, j, min);
+			}
+		return result;
+	}
+	
+	/**
+	 * Use this method for apply a dilation filter on the picture.
+	 * @param size (int) The size of the square filter.
+	 * @return (Data) The new picture.
+	 * @throws MyExceptions
+	 */
+	public Data squareDilation(int size) throws MyExceptions {
+		Data filter = new Data(size, size);
+		for(int i = 0; i < filter.row; ++i)
+			for(int j = 0; j < filter.column; ++j)
+				filter.setMatrixValue(i, j, 1.0f);
+		return dilation(filter);
+	}
+	
+	/**
+	 * Use this method for apply a dilation filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 * @return (Data) The new picture.
+	 * @throws MyExceptions
+	 */
+	public Data dilation(Data filter) throws MyExceptions {
+		Data result = new Data(this);
+		int[] filterCenter = new int[2];
+		filterCenter[0] = filter.row/2;
+		filterCenter[1] = filter.column/2;
+		for(int i = 0; i < row; ++i)
+			for(int j = 0; j < column; ++j) {
+				float max = Float.MIN_VALUE;
+				for(int k = 0; k < filter.row; ++k)
+					for(int l = 0; l < filter.column; ++l) {
+						int x = j - filterCenter[1] + l;
+						int y = i - filterCenter[0] + k;
+						if(filter.getMatrixValue(k, l) != 0 && x > -1 && y > -1 && x < column && y < row) {
+							if(getMatrixValue(y, x) > max)
+								max = getMatrixValue(y, x);
+						}
+					}
+				result.setMatrixValue(i, j, max);
+			}
+		return result;
 	}
 	
 	/**

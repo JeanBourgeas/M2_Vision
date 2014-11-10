@@ -297,6 +297,30 @@ class PortableMap {
 			}
 	}
 	
+	/**
+	 * Use this method for apply a erosion filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 * @throws MyExceptions
+	 */
+	public void erosion(Data filter) throws MyExceptions {
+		Data result = data.erosion(filter);
+		for(int i = 0; i < height; ++i)
+			for(int j = 0; j < width; ++j)
+				setData(i, j, (int) result.getMatrixValue(i, j));
+	}
+	
+	/**
+	 * Use this method for apply a dilation filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 * @throws MyExceptions
+	 */
+	public void dilation(Data filter) throws MyExceptions {
+		Data result = data.dilation(filter);
+		for(int i = 0; i < height; ++i)
+			for(int j = 0; j < width; ++j)
+				setData(i, j, (int) result.getMatrixValue(i, j));
+	}
+	
 	private int binaryToData(int value) {
 		return (1 - value)*255;
 	}

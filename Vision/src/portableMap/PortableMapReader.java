@@ -99,6 +99,10 @@ public class PortableMapReader {
 		}
 	}
 	
+	public void setWindowName(String name) {
+		window.setTitle(name);
+	}
+	
 	private void readP123(int type, BufferedReader buff, int width, int height) throws IOException, MyExceptions {
 		String[] splitLine;
 		int currentRow = 0;

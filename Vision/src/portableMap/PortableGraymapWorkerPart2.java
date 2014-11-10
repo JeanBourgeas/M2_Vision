@@ -156,6 +156,17 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 			}
 	}
 	
+	public void printObjectNumber() {
+		Data connexDatas = getConnexDatas();
+		try {
+			mergeDatas(connexDatas);
+		} catch (MyExceptions e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("There is " + ((int) connexDatas.getMaxValue()) + " objects in the picture.");
+	}
+	
 	public void printHoleNumber() {
 		System.out.println("Here is the number of holes in each object of the picture : ");
 		try {
@@ -191,8 +202,8 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 						}
 					}
 				PortableGraymapWorkerPart2 subPGWP2 = new PortableGraymapWorkerPart2(subPortableMap, 1 - objectConnexity);
-				subPGWP2.display();
 				subPGWP2.negativeBinaryPicture();
+				subPGWP2.display();
 				Data subData = subPGWP2.getConnexDatas();
 				mergeDatas(subData);
 				String res = "   Object number " + object + " : " + (int) (subData.getMaxValue() - 1) + " hole";
@@ -241,6 +252,73 @@ public class PortableGraymapWorkerPart2 extends PortableGraymapWorker {
 			for(int i = 0; i < portableMap.getHeight(); ++i)
 				for(int j = 0; j < portableMap.getWidth(); ++j)
 					portableMap.setData(i, j, portableMap.getMaxIntensity() - portableMap.getData(i, j));
+		} catch (MyExceptions e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Use this method for apply a erosion filter on the picture.
+	 * @param size (int) The size of the square filter.
+	 */
+	public void squareErosion(int size) {
+		Data filter = new Data(size, size);
+		for(int i = 0; i < filter.getRow(); ++i)
+			for(int j = 0; j < filter.getColumn(); ++j)
+				try {
+					filter.setMatrixValue(i, j, 1.0f);
+				} catch (MyExceptions e) {
+					e.printStackTrace();
+				}
+		erosion(filter);
+	}
+	
+	/**
+	 * Use this method for apply a erosion filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 */
+	public void erosion(Data filter) {
+		try {
+			portableMap.erosion(filter);
+		} catch (MyExceptions e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Use this method for apply a dilation filter on the picture.
+	 * @param size (int) The size of the square filter.
+	 */
+	public void squareDilation(int size) {
+		Data filter = new Data(size, size);
+		for(int i = 0; i < filter.getRow(); ++i)
+			for(int j = 0; j < filter.getColumn(); ++j)
+				try {
+					filter.setMatrixValue(i, j, 1.0f);
+				} catch (MyExceptions e) {
+					e.printStackTrace();
+				}
+		dilation(filter);
+	}
+	
+	public void minus(PortableMapReader pmr) {
+		for(int i = 0; i < portableMap.getHeight(); ++i)
+			for(int j = 0; j < portableMap.getWidth(); ++j) {
+				try {
+					portableMap.setData(i, j, portableMap.getData(i, j) - pmr.portableMap.getData(i, j));
+				} catch (MyExceptions e) {
+					e.printStackTrace();
+				}
+			}
+	}
+	
+	/**
+	 * Use this method for apply a dilation filter on the picture.
+	 * @param filter (Data) The mask use for the dilation (0 for unused)
+	 */
+	public void dilation(Data filter) {
+		try {
+			portableMap.dilation(filter);
 		} catch (MyExceptions e) {
 			e.printStackTrace();
 		}
